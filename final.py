@@ -1,15 +1,14 @@
 import time
 import numpy as np
 import tensorflow as tf
-import random  
-
+import random
 
 class ADC:
     def __init__(self, pin):
         self.pin = pin
 
     def read(self):
-        return random.randint(500, 3000)  
+        return random.randint(500, 3000)
 
 class Pin:
     def __init__(self, pin_number):
@@ -28,7 +27,6 @@ def unique_id():
 def reset():
     print("Simulated Reset")
 
-
 class WLAN:
     def __init__(self, mode):
         self.connected = False
@@ -37,7 +35,7 @@ class WLAN:
         pass
 
     def connect(self, ssid, password):
-        self.connected = True  
+        self.connected = True
 
     def isconnected(self):
         return self.connected
@@ -46,7 +44,6 @@ class WLAN:
         return ("192.168.1.10", "255.255.255.0", "192.168.1.1", "8.8.8.8")
 
 STA_IF = "STA_IF"
-
 
 class MQTTClient:
     def __init__(self, client_id, broker):
@@ -62,16 +59,13 @@ class MQTTClient:
     def disconnect(self):
         print("MQTT Disconnected")
 
-
 SSID = "your_SSID"
 PASSWORD = "your_PASSWORD"
-
 
 MQTT_BROKER = "your_mqtt_broker"
 MQTT_TOPIC = "bearing/sensor_data"
 ALERT_TOPIC = "bearing/alerts"
 CLIENT_ID = unique_id()
-
 
 def connect_wifi():
     wlan = WLAN(STA_IF)
@@ -89,7 +83,6 @@ def connect_wifi():
     else:
         print("Failed to connect to Wi-Fi, restarting...")
         reset()
-
 
 temp_sensor = ADC(Pin(34))
 vibration_sensor = ADC(Pin(35))
@@ -114,7 +107,6 @@ def moving_average(values, window=5):
 
 sensor_history = {"temp": [], "vib": [], "load": []}
 
-
 def read_sensors():
     try:
         raw_temp = (temp_sensor.read() - temp_baseline) * (3.3 / 4095.0) * 100
@@ -134,7 +126,6 @@ def read_sensors():
         print("Error reading sensors:", e)
         return 0, 0, 0
 
-
 def detect_anomaly(temp, vib, load):
     threshold_temp = max(80, moving_average(sensor_history["temp"]) * 1.2)
     threshold_vib = max(500, moving_average(sensor_history["vib"]) * 1.3)
@@ -145,10 +136,8 @@ def detect_anomaly(temp, vib, load):
         return True
     return False
 
-
 def load_model():
     try:
-        
         interpreter = tf.lite.Interpreter(model_path="bearing_model.tflite")
         interpreter.allocate_tensors()
         return interpreter
@@ -166,12 +155,10 @@ def predict_failure(temp, vib, load, interpreter):
         interpreter.set_tensor(input_details[0]['index'], input_data)
         interpreter.invoke()
         prediction = interpreter.get_tensor(output_details[0]['index'])
-
-        return round(float(prediction[0]), 2)  
+        return round(float(prediction[0]), 2)
     except Exception as e:
         print("Prediction error:", e)
         return 0
-
 
 def send_alert(temp, vib, load):
     try:
@@ -187,10 +174,9 @@ def send_alert(temp, vib, load):
     except Exception as e:
         print("Failed to send alert:", e)
 
-
 connect_wifi()
 model = load_model()
-wdt = WDT(timeout=60000)  
+wdt = WDT(timeout=60000)
 
 while True:
     temp, vib, load = read_sensors()
@@ -200,5 +186,5 @@ while True:
     anomaly = detect_anomaly(temp, vib, load)
     if anomaly:
         send_alert(temp, vib, load)
-    wdt.feed() 
-    time.sleep(10)  
+    wdt.feed()
+    time.sleep(10)
