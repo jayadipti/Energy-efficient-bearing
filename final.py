@@ -1,15 +1,14 @@
 import time
 import numpy as np
 import tensorflow as tf
-import random  # To generate simulated sensor values
+import random  
 
-# Simulated Machine Class (Replaces `machine`)
 class ADC:
     def __init__(self, pin):
         self.pin = pin
 
     def read(self):
-        return random.randint(500, 3000)  # Simulating sensor values
+        return random.randint(500, 3000) 
 
 class Pin:
     def __init__(self, pin_number):
@@ -28,7 +27,7 @@ def unique_id():
 def reset():
     print("Simulated Reset")
 
-# Simulated Network Class (Replaces `network`)
+
 class WLAN:
     def __init__(self, mode):
         self.connected = False
@@ -37,7 +36,7 @@ class WLAN:
         pass
 
     def connect(self, ssid, password):
-        self.connected = True  # Simulated successful connection
+        self.connected = True 
 
     def isconnected(self):
         return self.connected
@@ -47,7 +46,7 @@ class WLAN:
 
 STA_IF = "STA_IF"
 
-# Simulated MQTT Client (Replaces `umqtt.simple.MQTTClient`)
+
 class MQTTClient:
     def __init__(self, client_id, broker):
         self.client_id = client_id
@@ -62,17 +61,17 @@ class MQTTClient:
     def disconnect(self):
         print("MQTT Disconnected")
 
-# Wi-Fi credentials
+
 SSID = "your_SSID"
 PASSWORD = "your_PASSWORD"
 
-# MQTT broker details
+
 MQTT_BROKER = "your_mqtt_broker"
 MQTT_TOPIC = "bearing/sensor_data"
 ALERT_TOPIC = "bearing/alerts"
 CLIENT_ID = unique_id()
 
-# Wi-Fi connection
+
 def connect_wifi():
     wlan = WLAN(STA_IF)
     wlan.active(True)
@@ -90,7 +89,7 @@ def connect_wifi():
         print("Failed to connect to Wi-Fi, restarting...")
         reset()
 
-# Simulated sensors
+
 temp_sensor = ADC(Pin(34))
 vibration_sensor = ADC(Pin(35))
 load_sensor = ADC(Pin(32))
@@ -114,7 +113,7 @@ def moving_average(values, window=5):
 
 sensor_history = {"temp": [], "vib": [], "load": []}
 
-# Read sensor values with baseline correction
+
 def read_sensors():
     try:
         raw_temp = (temp_sensor.read() - temp_baseline) * (3.3 / 4095.0) * 100
@@ -134,7 +133,7 @@ def read_sensors():
         print("Error reading sensors:", e)
         return 0, 0, 0
 
-# Anomaly detection
+
 def detect_anomaly(temp, vib, load):
     threshold_temp = max(80, moving_average(sensor_history["temp"]) * 1.2)
     threshold_vib = max(500, moving_average(sensor_history["vib"]) * 1.3)
@@ -145,7 +144,7 @@ def detect_anomaly(temp, vib, load):
         return True
     return False
 
-# AI-based predictive maintenance using TensorFlow Lite
+
 def load_model():
     try:
         
@@ -172,7 +171,7 @@ def predict_failure(temp, vib, load, interpreter):
         print("Prediction error:", e)
         return 0
 
-# Alert notification
+
 def send_alert(temp, vib, load):
     try:
         client = MQTTClient(CLIENT_ID, MQTT_BROKER)
@@ -187,7 +186,7 @@ def send_alert(temp, vib, load):
     except Exception as e:
         print("Failed to send alert:", e)
 
-# Main loop
+
 connect_wifi()
 model = load_model()
 wdt = WDT(timeout=60000)  # 60-second watchdog timer
