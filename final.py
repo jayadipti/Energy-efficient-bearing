@@ -3,12 +3,13 @@ import numpy as np
 import tensorflow as tf
 import random  
 
+
 class ADC:
     def __init__(self, pin):
         self.pin = pin
 
     def read(self):
-        return random.randint(500, 3000) 
+        return random.randint(500, 3000)  
 
 class Pin:
     def __init__(self, pin_number):
@@ -36,7 +37,7 @@ class WLAN:
         pass
 
     def connect(self, ssid, password):
-        self.connected = True 
+        self.connected = True  
 
     def isconnected(self):
         return self.connected
@@ -166,7 +167,7 @@ def predict_failure(temp, vib, load, interpreter):
         interpreter.invoke()
         prediction = interpreter.get_tensor(output_details[0]['index'])
 
-        return round(float(prediction[0]), 2) 
+        return round(float(prediction[0]), 2)  
     except Exception as e:
         print("Prediction error:", e)
         return 0
@@ -189,7 +190,7 @@ def send_alert(temp, vib, load):
 
 connect_wifi()
 model = load_model()
-wdt = WDT(timeout=60000) 
+wdt = WDT(timeout=60000)  
 
 while True:
     temp, vib, load = read_sensors()
@@ -199,5 +200,5 @@ while True:
     anomaly = detect_anomaly(temp, vib, load)
     if anomaly:
         send_alert(temp, vib, load)
-    wdt.feed()  
+    wdt.feed() 
     time.sleep(10)  
