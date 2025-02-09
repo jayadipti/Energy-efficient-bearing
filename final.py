@@ -166,7 +166,7 @@ def predict_failure(temp, vib, load, interpreter):
         interpreter.invoke()
         prediction = interpreter.get_tensor(output_details[0]['index'])
 
-        return round(float(prediction[0]), 2)  # ✅ Extract the scalar value and round it
+        return round(float(prediction[0]), 2) 
     except Exception as e:
         print("Prediction error:", e)
         return 0
@@ -189,7 +189,7 @@ def send_alert(temp, vib, load):
 
 connect_wifi()
 model = load_model()
-wdt = WDT(timeout=60000)  # 60-second watchdog timer
+wdt = WDT(timeout=60000) 
 
 while True:
     temp, vib, load = read_sensors()
@@ -199,5 +199,5 @@ while True:
     anomaly = detect_anomaly(temp, vib, load)
     if anomaly:
         send_alert(temp, vib, load)
-    wdt.feed()  # Reset watchdog timer
-    time.sleep(10)  # Send data every 10 seconds
+    wdt.feed()  
+    time.sleep(10)  
